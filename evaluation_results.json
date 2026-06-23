@@ -1,0 +1,13 @@
+{
+  "baseline_accuracy": 0.7667,
+  "finetuned_accuracy": 0.4333,
+  "improvement": -0.3333,
+  "test_set_size": 30,
+  "label_map": {
+    "spitting facts": 0,
+    "yapping": 1,
+    "ragebait": 2,
+    "valid but mid": 3
+  },
+  "model": "distilbert-base-uncased"
+}
