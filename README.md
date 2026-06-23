@@ -6,9 +6,15 @@ The labels are about the *style and substance* of a take, not whether it's posit
 
 ---
 
+## Community Choice
+
+I chose **r/PokemonZA** as the primary source because I'm personally familiar with the game and community norms, which made annotation judgment calls faster and more consistent. I also picked this window because *Pokémon Legends: Z-A* had released not long before, so discourse was dense and varied — reviews, complaints, defenses, and shitposts were all active simultaneously rather than spread thin over time.
+
+---
+
 ## Dataset & Taxonomy
 
-The dataset is 200 manually annotated posts/comments from r/PokemonZA, perfectly balanced at 50 examples per label. Each post or comment is labeled as a single unit — if a post has a title and body, they're labeled together as one example (the title provides context for the body); a comment is labeled on its own, even though the post it's replying to may be used for context.
+The dataset is 200 manually annotated posts/comments, perfectly balanced at 50 examples per label. Each post or comment is labeled as a single unit — if a post has a title and body, they're labeled together as one example (the title provides context for the body); a comment is labeled on its own, even though the post it's replying to may be used for context.
 
 Split (stratified 70/15/15, `random_state=42`):
 
@@ -22,16 +28,66 @@ Split (stratified 70/15/15, `random_state=42`):
 
 **`spitting facts`** — Engages with specific, checkable details about the game (mechanics, numbers, named interactions, specific scenarios) and uses them to support a claim that could change someone's understanding. The poster demonstrates they've actually tested or closely observed what they're describing, rather than just reacting to it.
 
+*Examples:*
+1. "The combat is fast paced on the player side, but I find the AI lacking in the early parts of the game. It is 100% possible this will change in the future. You can literally spam attacks (yes, there are cooldowns) a lot faster than the NPCs do, so the fights aren't super terrible unless you're at a serious type disadvantage."
+2. "Larvitar and Dratini are both rare spawns but they behave very differently when you approach them in the overworld. Walking up to a Dratini startles it and it immediately tries to run away... Larvitar however will battle you on sight."
+
+**Uncertain case:** "The controls don't feel great in handheld mode. There's a lot of trigger button(s) usage/holding down that isn't typical of a Pokemon game and you may not be used to. I feel like it'll play and 'feel' better controlled in Docked mode. But this is more of an opinion than fact."
+
 **`valid but mid`** — Names real features (battle system, customization, companion mechanic), but the praise or complaint echoes the common sentiment about the game rather than surfacing something new.
 *Key signal: could this information be predicted just by knowing the most common opinions about this game?*
+
+*Examples:*
+1. "I wish there was more to do after the credits roll, but I had a blast with the main story."
+2. "I was on the hate train when this came out, but after playing it, it's one of my favorites. My only complaint is there aren't many cool clothing options for male characters."
+
+**Uncertain Case:** "It's mid. Played it, beat it, moved on. Not mad I bought it but not really thinking about it either." Posts that gesture at a verdict, but provide little reason or evidence as to why the user feels this way.
 
 **`ragebait`** — Structured to provoke an angry or defensive reaction rather than to inform or persuade. Often uses exaggeration, a strawman of the opposing view, or deliberately inflammatory framing; the goal seems to be reaction (comments, downvotes, arguing) rather than getting a point across.
 *Key signal: does the post seem built to make people angry or argue back, more than to make a real point?*
 
+*Examples:*
+1. "This is literally the worst Pokemon game ever made and if you disagree you haven't played a real Pokemon game."
+2. "I liked the city but hated the scaffolding. The game designers need to DESIGN the game to not have copy paste nonsense... cheap and unimaginative."
+
+**Uncertain Case:** "I'm sorry but if you think Lumiose City was 'big enough,' I genuinely don't know what to tell you." The user's post is dismissive but responding to a real ongoing debate rather than inventing a new one or providing a new opinion.
+
 **`yapping`** — Doesn't engage with any specific, checkable detail about the game, and doesn't stake out a real verdict either — it talks around the game (the poster's habits, unrelated tangents, pure filler) rather than about it.
 *Key signal: if you removed everything that isn't actually about this game's content or quality, would anything be left?*
 
-Each label also has a documented "uncertain case" used to keep annotation consistent at the boundary (e.g., for ragebait: a post that's dismissive but is responding to a real ongoing community debate, rather than inventing a new strawman, sits closer to the line than an outright inflammatory post).
+*Examples:*
+1. "Like I'm not saying it's good or anything but I will gladly buy a new Pokemon game bc I js really like the franchise."
+2. "Tbh I don't really care just cause I still enjoy the games and never really found an issue with em."
+
+**Uncertain Case:** A short, calm post that's hard to distinguish from Valid but Mid because it lacks intensity.
+
+Each label's documented "uncertain case" was used to keep annotation consistent at the boundary.
+
+---
+
+## Data Collection & Labeling Process
+
+**Source:** Posts and comments were pulled from multiple Pokémon-adjacent subreddits — primarily r/PokemonZA, with additional examples from r/LegendsZA, r/pokemon, and r/nintendo — to get a wider range of discourse styles than a single subreddit would produce, while keeping all examples focused on Legends Z-A discussion.
+
+**Collection method:** I manually browsed each subreddit — no script or API pull was used. I read through posts and comments directly and copied over the ones that contained an actual opinion or take on the game, skipping pure questions, memes without commentary, and off-topic content.
+
+**Labeling process:** I labeled all 200 examples myself, targeting roughly 50 examples per label to keep the dataset balanced. I used the taxonomy's key-signal questions (e.g., "could this be predicted from common opinions?" for valid but mid) as a consistency check during labeling, especially at label boundaries.
+
+**Label distribution:** perfectly balanced, 50 examples per label (200 total), stratified 70/15/15 into train/val/test (35/35/35/35 train, 30 val, 8/8/7/7 test — see split table above).
+
+### Difficult-to-Label Examples
+
+**Example 1:** "I actually think 7/10 is very fair and feels about right to me. At first the monotonous look of Lumiose City and the Wild Zones threw me off but after [...]"
+- **Labeled as:** `spitting facts`
+- **Why it was hard:** the post opens with a numeric rating, which on its own reads like a generic verdict closer to `valid but mid`. What pushed it to `spitting facts` was the second half — the poster describes a specific change in their own assessment over time ("at first... but after...") tied to a named location (Lumiose City, the Wild Zones), which is the "tested or closely observed" signal the taxonomy asks for. The boundary case is essentially: is the rating doing the work, or is the observed detail behind it doing the work? I judged the latter.
+
+**Example 2:** "Tbh the gaming community has just been force hating a lot of games lately. I am so tired of ppl listening to these content creators like their word is gospel..."
+- **Labeled as:** `ragebait`
+- **Why it was hard:** this post has no concrete claim about the game itself at all — by the `yapping` key signal ("if you removed everything not about the game, would anything be left?"), almost nothing is left, which made `yapping` tempting. But the post is structured to needle a specific group ("ppl listening to these content creators") rather than ramble without direction — it's aimed *at* someone in a way built to provoke pushback, which is the actual `ragebait` signal ("built to make people angry or argue back"). I weighted the directed, provocative framing over the lack of game-specific content and labeled it `ragebait`. (The fine-tuned model got this one wrong, predicting `yapping` at only 0.32 confidence — which tracks with how genuinely close this boundary is.)
+
+**Example 3:** "I'm taking my time with it, but I'm enjoying it so far. I do like how they have changed some things from legends arceus. Just dont go into it thinking..."
+- **Labeled as:** `yapping`
+- **Why it was hard:** the post references a real comparison point (changes from *Legends Arceus*), which made `valid but mid` a real candidate — naming an actual feature/change is exactly what that label looks for. But the post never specifies *what* changed or whether it's good or bad; it stays at the level of "I'm enjoying it, some things changed" without committing to a verdict or a checkable claim. Per the `yapping` key signal, stripping out the vague enthusiasm and the dangling "just don't go into it thinking..." leaves nothing concrete about the game's content, so I labeled it `yapping` over `valid but mid`.
 
 ---
 
@@ -42,6 +98,32 @@ Each label also has a documented "uncertain case" used to keep annotation consis
 **Hyperparameters:** the notebook's defaults (3 epochs, batch size 16) are tuned for datasets of 100–500 examples. With only 140 training examples spread across 4 classes (35/class), I increased to **4 epochs** and reduced the **train batch size to 8**, to give the randomly-initialized classification head more gradient updates and more optimizer steps per epoch to learn from a small dataset. Learning rate (2e-5), weight decay (0.01), and warmup steps (50) were left at the provided defaults.
 
 **Baseline:** zero-shot classification using `llama-3.3-70b-versatile` via the Groq API, prompted with the full label definitions and one example per class, temperature 0. The baseline saw 30/30 parseable responses on the test set.
+
+**System prompt used:**
+
+```
+SYSTEM_PROMPT = """
+You are classifying Reddit posts and comments from the Pokemon Fandom.
+Assign each post to exactly one of the following categories.
+spitting facts: A post engages with specific, checkable details about the game (mechanics, numbers, named interactions, specific scenarios) and uses them to support a claim that could change someone's understanding.
+Example: "The combat is fast paced on the player side, but I find the AI lacking in the early parts of the game. It is 100% possible this will change in the future. You can literally spam attacks (yes, there are cooldowns) a lot faster than the NPCs do, so the fights aren't super terrible unless you're at a serious type disadvantage."
+valid but mid: A post names real features (battle system, customization, companion mechanic), but the praise or complaint echoes the common sentiment about the game rather than surfacing something new.
+Example: "I love how much more challenging it has been than past games, I love the format, I love the setting, the story was great and was longer than most pokemon games to get through for me personally. Now I'm getting absolutely decimated trying my hand at online Z-A and am just starting mega dimension and loving both of those."
+ragebait: A post is structured to provoke an angry or defensive reaction rather than to inform or persuade.
+Example: "I liked the city but hated the scaffolding. The game designers need to DESIGN the game to not have copy paste nonsense."
+yapping: A post doesn't engage with any specific, checkable detail about the game, and doesn't actually stake out a real verdict on it either — it talks around the game (the poster's habits, unrelated tangents, pure filler) rather than about it.
+Example: "Like I'm not saying it's good or anything but I will gladly buy a new pokemon game bc I just really like the franchise."
+Respond with ONLY the label name.
+Do not explain your reasoning.
+Valid labels:
+spitting facts
+valid but mid
+ragebait
+yapping
+"""
+```
+
+**Collection process:** for each of the 30 test-set examples, the post/comment text was inserted into a user message, sent to the Groq API (`llama-3.3-70b-versatile`) at temperature 0, and the single-label response was parsed directly (the system prompt enforces label-only output). All 30 responses were parseable without retry.
 
 ---
 
@@ -177,6 +259,8 @@ The clearest evidence that this is a **data scarcity problem rather than a flawe
 **How the spec helped:** the taxonomy's "Key Signal" questions for each label (e.g., for valid but mid: *"could this be predicted just by knowing the most common opinions about this game?"*) gave me a concrete, repeatable test to apply during annotation, instead of relying on a vaguer positive/negative gut read. This was especially useful at the valid-but-mid/spitting-facts boundary, where two posts can use nearly identical vocabulary and only differ in whether the claim is genuinely new information — having a written test reduced the chance I'd label similar posts inconsistently across the 200-example set.
 
 **Where my implementation diverged:** the notebook's default hyperparameters (3 epochs, batch size 16) are recommended for datasets of 100–500 examples, but with only 140 training examples split across 4 classes (35 each), I judged that the head needed more optimizer steps to learn anything at all from so little data, so I raised epochs to 4 and lowered batch size to 8. In hindsight, given the test results, this divergence wasn't the actual bottleneck — the real constraint was example count and diversity per class, not training schedule. A more useful divergence next time would be collecting more examples per class rather than tuning epochs/batch size on a fixed 140-example train set.
+
+A second, smaller divergence: the baseline's system prompt only includes one example per label and no key-signal questions or uncertain-case framing, while the full taxonomy I annotated against includes two examples, a key-signal question, and an uncertain-case note per label. I simplified the prompt to keep it concise for the API call, but in hindsight the baseline's strong, balanced performance (worst per-class F1 of 0.67) suggests the 70B model didn't need the extra scaffolding I relied on as a human annotator — it inferred the intent-based distinctions from far less guidance than I had.
 
 ---
 
